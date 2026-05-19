@@ -4,6 +4,8 @@ struct BoardsView: View {
     @EnvironmentObject private var gameState: GameState
     @EnvironmentObject private var settings: GameSettings
     @Binding var screen: AppScreen
+    @State private var highlightedUnlock: BoardStyle?
+    @State private var didPlayUnlockPulse = false
 
     var body: some View {
         ZStack {
@@ -11,10 +13,29 @@ struct BoardsView: View {
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 18) {
-                    HeaderBar(title: "Boards", subtitle: "Unlock deck styles with bigger runs") {
+                    HeaderBar(title: "Boards", subtitle: "Deck styles unlocked by best run score") {
                         screen = .home
                     }
                     .padding(.top, 18)
+
+                    GlassCard {
+                        HStack(spacing: 14) {
+                            StatPill(title: "Best", value: "\(gameState.highScore)", tint: DesignSystem.gold)
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("Current deck")
+                                    .font(.system(size: 12, weight: .black, design: .rounded))
+                                    .foregroundStyle(.white.opacity(0.58))
+                                Text(gameState.selectedBoardStyle.displayName)
+                                    .font(.system(.headline, design: .rounded, weight: .black))
+                                    .foregroundStyle(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.72)
+                            }
+                            Spacer()
+                            BoardPreview(board: gameState.selectedBoardStyle, selected: true)
+                                .frame(width: 112)
+                        }
+                    }
 
                     ForEach(BoardStyle.allCases) { board in
                         boardCard(board)
@@ -26,15 +47,24 @@ struct BoardsView: View {
                 .padding(.bottom, 24)
             }
         }
+        .onAppear {
+            highlightedUnlock = gameState.lastRunSummary?.unlockedBoard
+            if highlightedUnlock != nil, !didPlayUnlockPulse {
+                didPlayUnlockPulse = true
+                HapticsManager.shared.play(.unlock, enabled: settings.hapticsEnabled)
+            }
+        }
     }
 
     private func boardCard(_ board: BoardStyle) -> some View {
         let unlocked = gameState.isUnlocked(board)
         let selected = gameState.selectedBoardStyle == board
+        let isNew = highlightedUnlock == board
+        let scoreRemaining = max(0, board.unlockScore - gameState.highScore)
 
         return GlassCard {
             HStack(spacing: 16) {
-                BoardPreview(board: board, locked: !unlocked)
+                BoardPreview(board: board, locked: !unlocked, selected: selected)
 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 8) {
@@ -46,6 +76,13 @@ struct BoardsView: View {
                         if selected {
                             Image(systemName: "checkmark.seal.fill")
                                 .foregroundStyle(DesignSystem.mint)
+                        } else if isNew {
+                            Text("NEW")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .foregroundStyle(.black)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(DesignSystem.gold, in: Capsule())
                         }
                     }
 
@@ -54,6 +91,9 @@ struct BoardsView: View {
                         .foregroundStyle(.white.opacity(0.64))
 
                     if unlocked {
+                        Text(board.unlockScore == 0 ? "Unlocked by default" : "Unlocked at \(board.unlockScore)")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.46))
                         Button(selected ? "Selected" : "Select") {
                             gameState.select(board)
                             HapticsManager.shared.play(.tap, enabled: settings.hapticsEnabled)
@@ -63,7 +103,7 @@ struct BoardsView: View {
                     } else {
                         ProgressView(value: min(Double(gameState.highScore), Double(board.unlockScore)), total: Double(board.unlockScore))
                             .tint(board.primaryColor)
-                        Text("Unlocks at \(board.unlockScore) best score")
+                        Text("\(scoreRemaining) points to unlock • requires \(board.unlockScore)")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundStyle(.white.opacity(0.58))
                     }

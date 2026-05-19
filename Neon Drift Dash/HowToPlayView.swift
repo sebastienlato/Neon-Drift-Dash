@@ -4,11 +4,11 @@ struct HowToPlayView: View {
     @Binding var screen: AppScreen
 
     private let tips: [(String, String, String, Color)] = [
-        ("Drag", "Move anywhere inside the safe lane. Small drags make smooth dodges.", "hand.draw.fill", DesignSystem.cyan),
+        ("Drift", "Drag from the rider or anywhere on the screen. The board follows with a smooth offset.", "hand.draw.fill", DesignSystem.cyan),
         ("Dodge", "Hazards break shields. After a hit, use the flash window to reposition.", "exclamationmark.triangle.fill", DesignSystem.orange),
-        ("Collect", "Shards add score. Every three clean pickups pushes the combo higher.", "diamond.fill", DesignSystem.magenta),
-        ("Survive", "Waves get faster every 25 seconds with tougher mixed patterns.", "bolt.fill", DesignSystem.gold),
-        ("Unlock", "Higher best scores open Nova, Phantom, and Solar boards.", "sparkles", DesignSystem.mint)
+        ("Shard Rush", "Shards are generous pickups. Every three clean grabs pushes the combo higher.", "diamond.fill", DesignSystem.magenta),
+        ("Overdrive", "Waves ramp every 28 seconds with faster traffic and tighter patterns.", "bolt.fill", DesignSystem.gold),
+        ("Decks", "Best runs unlock Nova, Phantom, and Solar boards.", "sparkles", DesignSystem.mint)
     ]
 
     var body: some View {
@@ -17,7 +17,7 @@ struct HowToPlayView: View {
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
-                    HeaderBar(title: "How To Play", subtitle: "Stay loose, chain shards, keep your shields alive") {
+                    HeaderBar(title: "How To Play", subtitle: "Stay loose, chain shards, keep shields alive") {
                         screen = .home
                     }
                     .padding(.top, 18)
@@ -37,10 +37,10 @@ struct HowToPlayView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Score flow")
+                                Text("Combo flow")
                                     .font(.system(.title3, design: .rounded, weight: .black))
                                     .foregroundStyle(.white)
-                                Text("Score comes from survival time and shard streaks. Getting hit or missing too many shards drops combo back to x1.")
+                                Text("Score comes from survival time and shard streaks. Hits or missed shard chains drop combo back to x1.")
                                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                                     .foregroundStyle(.white.opacity(0.68))
                                     .fixedSize(horizontal: false, vertical: true)

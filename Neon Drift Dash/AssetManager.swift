@@ -52,36 +52,59 @@ enum ObstacleKind: CaseIterable {
 
     var collisionRadius: CGFloat {
         switch self {
-        case .drone: 30
-        case .barrier: 44
-        case .cone: 28
-        case .mine: 29
+        case .drone: 23
+        case .barrier: 32
+        case .cone: 22
+        case .mine: 24
         }
     }
 }
 
 enum AssetManager {
+    private static var textureCache: [String: SKTexture] = [:]
+
     static func textureIfAvailable(_ name: String) -> SKTexture? {
+        if let cached = textureCache[name] {
+            return cached
+        }
         guard let image = UIImage(named: name) else { return nil }
         let texture = SKTexture(image: image)
         texture.filteringMode = .linear
+        textureCache[name] = texture
         return texture
     }
 
     static func playerTexture(pose: PlayerPose, board: BoardStyle) -> SKTexture {
-        textureIfAvailable(pose.assetName) ?? texture(from: fallbackPlayerImage(pose: pose, board: board))
+        textureIfAvailable(pose.assetName) ?? cachedFallbackTexture("fallback.player.\(pose.assetName).\(board.rawValue)") {
+            fallbackPlayerImage(pose: pose, board: board)
+        }
     }
 
     static func trailTexture(board: BoardStyle) -> SKTexture {
-        textureIfAvailable("TrailStreak") ?? texture(from: fallbackTrailImage(board: board))
+        textureIfAvailable("TrailStreak") ?? cachedFallbackTexture("fallback.trail.\(board.rawValue)") {
+            fallbackTrailImage(board: board)
+        }
     }
 
     static func shardTexture() -> SKTexture {
-        textureIfAvailable("EnergyShard") ?? texture(from: fallbackShardImage())
+        textureIfAvailable("EnergyShard") ?? cachedFallbackTexture("fallback.shard") {
+            fallbackShardImage()
+        }
     }
 
     static func obstacleTexture(kind: ObstacleKind) -> SKTexture {
-        textureIfAvailable(kind.assetName) ?? texture(from: fallbackObstacleImage(kind: kind))
+        textureIfAvailable(kind.assetName) ?? cachedFallbackTexture("fallback.obstacle.\(kind.assetName)") {
+            fallbackObstacleImage(kind: kind)
+        }
+    }
+
+    private static func cachedFallbackTexture(_ key: String, image: () -> UIImage) -> SKTexture {
+        if let cached = textureCache[key] {
+            return cached
+        }
+        let created = texture(from: image())
+        textureCache[key] = created
+        return created
     }
 
     private static func texture(from image: UIImage) -> SKTexture {

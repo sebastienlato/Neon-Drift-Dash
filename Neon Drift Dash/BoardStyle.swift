@@ -29,19 +29,19 @@ enum BoardStyle: String, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .pulse: "Balanced glow"
-        case .nova: "Hot streak trails"
+        case .pulse: "Balanced neon control"
+        case .nova: "Hot streak drift trails"
         case .phantom: "Violet phase edge"
-        case .solar: "Orange starburst deck"
+        case .solar: "Orange overdrive deck"
         }
     }
 
     var unlockScore: Int {
         switch self {
         case .pulse: 0
-        case .nova: 2_000
-        case .phantom: 6_000
-        case .solar: 12_000
+        case .nova: 2_500
+        case .phantom: 7_500
+        case .solar: 15_000
         }
     }
 

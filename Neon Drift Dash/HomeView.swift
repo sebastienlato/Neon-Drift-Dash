@@ -5,13 +5,14 @@ struct HomeView: View {
     @EnvironmentObject private var settings: GameSettings
     @Binding var screen: AppScreen
     @State private var pulse = false
+    @State private var calloutPulse = false
 
     var body: some View {
         ZStack {
             NeonAnimatedBackground()
 
-            VStack(spacing: 18) {
-                Spacer(minLength: 16)
+            VStack(spacing: 16) {
+                Spacer(minLength: 12)
 
                 logo
                     .padding(.horizontal, 22)
@@ -19,21 +20,43 @@ struct HomeView: View {
                     .animation(.easeInOut(duration: 1.7).repeatForever(autoreverses: true), value: pulse)
 
                 GlassCard {
-                    HStack(spacing: 14) {
-                        StatPill(title: "Best", value: "\(gameState.highScore)", tint: DesignSystem.gold)
-                        Spacer(minLength: 8)
-                        VStack(alignment: .trailing, spacing: 6) {
-                            Text(gameState.selectedBoardStyle.displayName)
-                                .font(.system(.headline, design: .rounded, weight: .bold))
-                                .foregroundStyle(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                            Text("Selected board")
-                                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                .foregroundStyle(.white.opacity(0.62))
+                    VStack(spacing: 12) {
+                        HStack(spacing: 14) {
+                            StatPill(title: "Best Run", value: "\(gameState.highScore)", tint: DesignSystem.gold)
+                            Spacer(minLength: 8)
+                            VStack(alignment: .trailing, spacing: 6) {
+                                Text(gameState.selectedBoardStyle.displayName)
+                                    .font(.system(.headline, design: .rounded, weight: .black))
+                                    .foregroundStyle(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                                Text("Ready for shard rush")
+                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(.white.opacity(0.62))
+                            }
+                            BoardPreview(board: gameState.selectedBoardStyle, selected: true)
+                                .frame(width: 118)
                         }
-                        BoardPreview(board: gameState.selectedBoardStyle)
-                            .frame(width: 118)
+
+                        if let unlocked = gameState.lastRunSummary?.unlockedBoard {
+                            HStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .foregroundStyle(DesignSystem.gold)
+                                Text("\(unlocked.shortName) is live in Boards")
+                                    .font(.system(size: 13, weight: .black, design: .rounded))
+                                    .foregroundStyle(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.72)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 9)
+                            .background(DesignSystem.gold.opacity(calloutPulse ? 0.24 : 0.13), in: Capsule())
+                            .overlay {
+                                Capsule().stroke(DesignSystem.gold.opacity(0.42), lineWidth: 1)
+                            }
+                            .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: calloutPulse)
+                        }
                     }
                 }
                 .padding(.horizontal, 20)
@@ -61,15 +84,20 @@ struct HomeView: View {
                 }
                 .padding(.horizontal, 20)
 
-                Text("Tap to Drift")
+                Text("Rooftop pulse • drag to drift • chase the streak")
                     .font(.system(.subheadline, design: .rounded, weight: .bold))
                     .foregroundStyle(.white.opacity(0.72))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
                     .padding(.top, 6)
 
                 Spacer(minLength: 18)
             }
         }
-        .onAppear { pulse = true }
+        .onAppear {
+            pulse = true
+            calloutPulse = true
+        }
     }
 
     @ViewBuilder

@@ -257,14 +257,14 @@ struct StatPill: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
             Text(value)
-                .font(.system(size: 18, weight: .black, design: .rounded))
+                .font(.system(size: 17, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .contentTransition(.numericText())
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
         }
-        .frame(minWidth: 72, minHeight: 46)
-        .padding(.horizontal, 10)
+        .frame(minWidth: 64, minHeight: 46)
+        .padding(.horizontal, 8)
         .background(.ultraThinMaterial.opacity(0.68), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -277,14 +277,15 @@ struct StatPill: View {
 struct BoardPreview: View {
     let board: BoardStyle
     var locked: Bool = false
+    var selected: Bool = false
 
     var body: some View {
         ZStack {
             Capsule()
                 .fill(board.gradient)
-                .frame(width: 142, height: 34)
-                .blur(radius: 10)
-                .opacity(locked ? 0.28 : 0.9)
+                .frame(width: 148, height: 38)
+                .blur(radius: selected ? 13 : 10)
+                .opacity(locked ? 0.26 : selected ? 1.0 : 0.82)
             Capsule()
                 .fill(
                     LinearGradient(
@@ -294,6 +295,17 @@ struct BoardPreview: View {
                     )
                 )
                 .frame(width: 138, height: 26)
+                .overlay(alignment: .topLeading) {
+                    HStack(spacing: 4) {
+                        ForEach(0..<3, id: \.self) { index in
+                            Capsule()
+                                .fill(board.colors[index % board.colors.count].opacity(0.85))
+                                .frame(width: 18, height: 3)
+                        }
+                    }
+                    .padding(.leading, 20)
+                    .padding(.top, 7)
+                }
                 .overlay(alignment: .bottom) {
                     Capsule()
                         .fill(board.gradient)
@@ -306,11 +318,19 @@ struct BoardPreview: View {
                 }
                 .rotationEffect(.degrees(-5))
                 .opacity(locked ? 0.42 : 1)
+                .scaleEffect(selected ? 1.04 : 1)
 
             if locked {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(.white.opacity(0.8))
+            } else if selected {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 13, weight: .black))
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(DesignSystem.mint.opacity(0.55), in: Circle())
+                    .offset(x: 54, y: -20)
             }
         }
         .frame(width: 160, height: 62)

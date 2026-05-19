@@ -10,58 +10,68 @@ struct GameView: View {
     @State private var stats = RunStats.empty
     @State private var summary: RunSummary?
     @State private var isPaused = false
+    @State private var viewSize = CGSize.zero
 
     var body: some View {
-        ZStack {
-            if let scene {
-                SpriteView(scene: scene, options: [.ignoresSiblingOrder])
-                    .ignoresSafeArea()
-            } else {
-                NeonAnimatedBackground()
-            }
+        GeometryReader { proxy in
+            ZStack {
+                if let scene {
+                    SpriteView(scene: scene, options: [.ignoresSiblingOrder])
+                        .ignoresSafeArea()
+                } else {
+                    NeonAnimatedBackground()
+                }
 
-            VStack(spacing: 0) {
-                GameHUD(stats: stats, pauseAction: togglePause)
-                    .padding(.horizontal, 14)
-                    .padding(.top, 8)
-                Spacer()
-            }
+                VStack(spacing: 0) {
+                    GameHUD(stats: stats, pauseAction: togglePause)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 8)
+                    Spacer()
+                }
 
-            if isPaused {
-                PauseOverlay(
-                    resume: togglePause,
-                    restart: restart,
-                    home: goHome
-                )
-                .transition(.opacity.combined(with: .scale(scale: 0.96)))
-            }
+                if isPaused {
+                    PauseOverlay(
+                        resume: togglePause,
+                        restart: restart,
+                        home: goHome
+                    )
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                }
 
-            if stats.isGameOver, let summary {
-                GameOverOverlay(
-                    summary: summary,
-                    restart: restart,
-                    home: goHome
-                )
-                .transition(.opacity.combined(with: .scale(scale: 0.94)))
+                if stats.isGameOver, let summary {
+                    GameOverOverlay(
+                        summary: summary,
+                        restart: restart,
+                        home: goHome
+                    )
+                    .transition(.opacity.combined(with: .scale(scale: 0.94)))
+                }
+            }
+            .onAppear {
+                viewSize = proxy.size
+                createSceneIfNeeded(size: proxy.size)
+            }
+            .onChange(of: proxy.size) { _, newSize in
+                viewSize = newSize
+                scene?.size = newSize
             }
         }
         .animation(.spring(response: 0.32, dampingFraction: 0.82), value: isPaused)
         .animation(.spring(response: 0.36, dampingFraction: 0.84), value: stats.isGameOver)
-        .onAppear(perform: createSceneIfNeeded)
         .onDisappear {
             scene?.isPaused = true
         }
     }
 
-    private func createSceneIfNeeded() {
+    private func createSceneIfNeeded(size: CGSize) {
         guard scene == nil else { return }
-        startNewScene()
+        startNewScene(size: size)
     }
 
-    private func startNewScene() {
-        let screenSize = UIScreen.main.bounds.size
+    private func startNewScene(size: CGSize? = nil) {
+        let sceneSize = size ?? (viewSize == .zero ? CGSize(width: 393, height: 852) : viewSize)
         let newScene = GameScene(
-            size: screenSize,
+            size: sceneSize,
             boardStyle: gameState.selectedBoardStyle,
             settings: settings,
             gameState: gameState
@@ -111,7 +121,8 @@ struct GameHUD: View {
             HStack(spacing: 8) {
                 StatPill(title: "Score", value: "\(stats.score)", tint: DesignSystem.cyan)
                 StatPill(title: "Combo", value: "x\(stats.combo)", tint: stats.combo > 1 ? DesignSystem.magenta : DesignSystem.violet)
-                    .scaleEffect(stats.combo > 1 ? 1.04 : 1)
+                    .scaleEffect(stats.combo > 1 ? 1.06 : 1)
+                    .shadow(color: stats.combo > 1 ? DesignSystem.magenta.opacity(0.35) : .clear, radius: 12)
                 StatPill(title: "Shield", value: shieldText, tint: stats.shields <= 1 ? DesignSystem.orange : DesignSystem.mint)
 
                 Button(action: pauseAction) {
@@ -157,7 +168,7 @@ struct GameHUD: View {
     }
 
     private var shieldText: String {
-        String(repeating: "◆", count: max(0, stats.shields))
+        stats.shields > 0 ? String(repeating: "◆", count: stats.shields) : "0"
     }
 }
 
@@ -177,8 +188,12 @@ struct PauseOverlay: View {
                         .font(.system(.largeTitle, design: .rounded, weight: .black))
                         .foregroundStyle(.white)
 
-                    NeonButton(title: "Resume", systemImage: "play.fill", action: resume)
-                    NeonButton(title: "Restart", systemImage: "arrow.clockwise", style: .secondary, action: restart)
+                    Text("Hold the pulse. Pick your line.")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.62))
+
+                    NeonButton(title: "Resume Run", systemImage: "play.fill", action: resume)
+                    NeonButton(title: "Restart Dash", systemImage: "arrow.clockwise", style: .secondary, action: restart)
                     NeonButton(title: "Home", systemImage: "house.fill", style: .secondary, action: home)
                 }
             }
@@ -199,7 +214,7 @@ struct GameOverOverlay: View {
 
             GlassCard {
                 VStack(spacing: 16) {
-                    Text("Run Complete")
+                    Text("Dash Over")
                         .font(.system(.largeTitle, design: .rounded, weight: .black))
                         .foregroundStyle(DesignSystem.neonGradient)
                         .lineLimit(1)
@@ -225,11 +240,11 @@ struct GameOverOverlay: View {
                         StatPill(title: "Best Combo", value: "x\(summary.bestCombo)", tint: DesignSystem.orange)
                     }
 
-                    Text("Wave \(summary.wave)")
+                    Text("Wave \(summary.wave) reached")
                         .font(.system(.headline, design: .rounded, weight: .black))
                         .foregroundStyle(.white.opacity(0.75))
 
-                    NeonButton(title: "Restart", systemImage: "arrow.clockwise", action: restart)
+                    NeonButton(title: "Run It Back", systemImage: "arrow.clockwise", action: restart)
                     NeonButton(title: "Home", systemImage: "house.fill", style: .secondary, action: home)
                 }
             }

@@ -11,16 +11,16 @@ struct SettingsView: View {
             NeonAnimatedBackground(showRooftop: false)
 
             VStack(spacing: 16) {
-                HeaderBar(title: "Settings", subtitle: "Tune feedback and local progress") {
+                HeaderBar(title: "Settings", subtitle: "Feedback, reset, and local progress") {
                     screen = .home
                 }
                 .padding(.top, 18)
 
                 GlassCard {
                     VStack(spacing: 16) {
-                        ToggleRow(title: "Sound Effects", subtitle: "Hooks are ready for bundled SFX", icon: "speaker.wave.2.fill", tint: DesignSystem.cyan, isOn: $settings.soundEnabled)
+                        ToggleRow(title: "Sound Effects", subtitle: "Ready for future pulse, hit, and shard sounds", icon: "speaker.wave.2.fill", tint: DesignSystem.cyan, isOn: $settings.soundEnabled)
                         Divider().overlay(.white.opacity(0.12))
-                        ToggleRow(title: "Haptics", subtitle: "Collect, hit, unlock, and game-over feedback", icon: "iphone.radiowaves.left.and.right", tint: DesignSystem.magenta, isOn: $settings.hapticsEnabled)
+                        ToggleRow(title: "Haptics", subtitle: "Start, collect, hit, unlock, and dash-over feedback", icon: "iphone.radiowaves.left.and.right", tint: DesignSystem.magenta, isOn: $settings.hapticsEnabled)
                     }
                 }
 
@@ -57,7 +57,7 @@ struct SettingsView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Locked boards will lock again if their milestone is no longer met.")
+            Text("Nova, Phantom, and Solar will lock again until their score milestones are reached.")
         }
     }
 }
