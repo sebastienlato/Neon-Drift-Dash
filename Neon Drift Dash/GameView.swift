@@ -59,7 +59,8 @@ struct GameView: View {
         .animation(.spring(response: 0.32, dampingFraction: 0.82), value: isPaused)
         .animation(.spring(response: 0.36, dampingFraction: 0.84), value: stats.isGameOver)
         .onDisappear {
-            scene?.isPaused = true
+            scene?.shutdown()
+            scene = nil
         }
     }
 
@@ -100,14 +101,15 @@ struct GameView: View {
     }
 
     private func restart() {
-        scene?.isPaused = true
+        scene?.shutdown()
         scene = nil
         startNewScene()
         HapticsManager.shared.play(.start, enabled: settings.hapticsEnabled)
     }
 
     private func goHome() {
-        scene?.isPaused = true
+        scene?.shutdown()
+        scene = nil
         screen = .home
     }
 }

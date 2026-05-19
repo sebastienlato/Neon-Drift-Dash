@@ -18,6 +18,9 @@ struct Neon_Drift_DashApp: App {
                 .environmentObject(gameState)
                 .environmentObject(settings)
                 .preferredColorScheme(.dark)
+                .onAppear {
+                    AudioManager.shared.prepareAll()
+                }
         }
     }
 }

@@ -28,6 +28,32 @@ Create a high-resolution transparent PNG game sprite of the same futuristic teen
 
 For built-in generation with local extraction: put the sprite on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 anywhere in the subject.
 
+## Cosmetic Board Styles
+
+### PulseBoard
+
+Create a high-resolution transparent PNG game cosmetic sprite of a futuristic hoverboard called "Pulse Board". Sleek dark deck, electric blue and magenta underglow, balanced neon control feel, clean premium mobile arcade silhouette, readable at small size. Style: cyberpunk rooftop skate culture, teen arcade, sharp edges, soft glow, no rider, no text, no logo, no watermark.
+
+For built-in generation with local extraction: put the board on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the board.
+
+### NovaBoard
+
+Create a high-resolution transparent PNG game cosmetic sprite of a futuristic hoverboard called "Nova Board". Sleek dark deck with orange, magenta, and violet hot-streak underglow, fast drift energy, premium teen arcade silhouette, readable at small size. Style: cyberpunk rooftop skate culture, polished 2D mobile game art, no rider, no text, no logo, no watermark.
+
+For built-in generation with local extraction: put the board on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the board.
+
+### PhantomBoard
+
+Create a high-resolution transparent PNG game cosmetic sprite of a futuristic hoverboard called "Phantom Board". Sleek dark deck with violet phase glow, cyan edge light, subtle ghosted energy trail, premium teen arcade silhouette, readable at small size. Style: cyberpunk rooftop skate culture, polished 2D mobile game art, no rider, no text, no logo, no watermark.
+
+For built-in generation with local extraction: put the board on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the board.
+
+### SolarBoard
+
+Create a high-resolution transparent PNG game cosmetic sprite of a futuristic hoverboard called "Solar Board". Sleek dark deck with orange overdrive glow, gold starburst underside, magenta accent strips, premium teen arcade silhouette, readable at small size. Style: cyberpunk rooftop skate culture, polished 2D mobile game art, no rider, no text, no logo, no watermark.
+
+For built-in generation with local extraction: put the board on a perfectly flat solid #00ff00 chroma-key background for background removal. The background must be one uniform color with no shadows, gradients, texture, reflections, floor plane, or lighting variation. Do not use #00ff00 in the board.
+
 ## Gameplay Sprites
 
 ### TrailStreak

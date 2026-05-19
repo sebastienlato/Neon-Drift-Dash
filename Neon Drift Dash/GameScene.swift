@@ -60,6 +60,15 @@ final class GameScene: SKScene {
         fatalError("GameScene must be created in code.")
     }
 
+    func shutdown() {
+        isPaused = true
+        onStatsChanged = nil
+        onGameOver = nil
+        hasActiveDrag = false
+        removeAllActions()
+        removeAllChildren()
+    }
+
     override func didMove(to view: SKView) {
         guard player.parent == nil else { return }
 
@@ -374,6 +383,7 @@ final class GameScene: SKScene {
         wave = nextWave
         showWaveBanner(waveTitle(for: wave))
         HapticsManager.shared.play(.tap, enabled: settings.hapticsEnabled)
+        AudioManager.shared.play(.waveStart, enabled: settings.soundEnabled)
     }
 
     private func waveTitle(for wave: Int) -> String {
@@ -629,6 +639,7 @@ final class GameScene: SKScene {
             bestCombo = max(bestCombo, combo)
             showFloatingText("COMBO x\(combo)", at: node.position, color: boardStyle.skSecondaryColor)
             showComboPulse()
+            AudioManager.shared.play(.comboIncrease, enabled: settings.soundEnabled)
         } else {
             showFloatingText("+\(100 * combo)", at: node.position, color: boardStyle.skPrimaryColor)
         }
@@ -663,6 +674,7 @@ final class GameScene: SKScene {
         AudioManager.shared.play(.hit, enabled: settings.soundEnabled)
 
         if shields <= 0 {
+            AudioManager.shared.play(.shieldBreak, enabled: settings.soundEnabled)
             endGame()
         } else {
             pushStats(force: true)

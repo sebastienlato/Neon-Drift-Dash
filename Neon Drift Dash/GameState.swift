@@ -45,7 +45,7 @@ final class GameState: ObservableObject {
         self.persistence = persistence
         highScore = persistence.integer(for: PersistenceController.Key.highScore)
         selectedBoardID = persistence.string(for: PersistenceController.Key.selectedBoard) ?? BoardStyle.pulse.rawValue
-        if selectedBoard == nil {
+        if BoardStyle(rawValue: selectedBoardID) == nil {
             selectedBoardID = BoardStyle.pulse.rawValue
         }
     }
@@ -99,7 +99,7 @@ final class GameState: ObservableObject {
     func resetHighScore() {
         highScore = 0
         persistence.set(0, for: PersistenceController.Key.highScore)
-        if selectedBoardStyle != .pulse {
+        if selectedBoardID != BoardStyle.pulse.rawValue {
             selectedBoardID = BoardStyle.pulse.rawValue
         }
         lastRunSummary = nil
